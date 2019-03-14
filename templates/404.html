@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% block title %}错误发生{% endblock %}
+{% block body %}
+    <div class="row justify-content-around">
+    <h1>错误发生,你要的页面好像没有呢</h1>
+    </div>
+    <img src="{{ url_for('static',filename='images/404.png') }}" alt="404">
+{% endblock %}

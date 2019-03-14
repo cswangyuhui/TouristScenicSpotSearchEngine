@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+{% block title %}查询结果{% endblock %}
+{% block body %}
+    <script src="{{ url_for('static',filename='js/bootstrap-paginator.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/qunit-1.11.0.js') }}"></script>
+    <div class="row justify-content-center">
+        <div class="col" id = "showTable">
+            {% for i in range(10) %}
+                {% if i < length %}
+            <div class="panel panel-info" id="panel_{{ i }}">
+                <div class ="panel-title">
+                    <h3 id="h3_{{ i }}"></h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li id ="li1_{{ i }}" class="list-group-item"></li>
+                        <li id ="li2_{{ i }}" class="list-group-item"></li>
+                        <li id ="li3_{{ i }}" class="list-group-item"></li>
+                        <li id ="li4_{{ i }}" class="list-group-item"></li>
+                        <li id ="li5_{{ i }}" class="list-group-item"></li>
+                        <li id ="li6_{{ i }}" class="list-group-item"></li>
+                        <li id ="li7_{{ i }}" class="list-group-item"></li>
+                        <li id ="li8_{{ i }}" class="list-group-item">景点详情 : <a id = "a_{{ i }}" href="www.baidu.com">点击前往</a></li>
+                        <li id ="li9_{{ i }}" class="list-group-item"></li>
+                        <!--<li id ="li10_{{ i }}" class="list-group-item"> 信息抽取 : <a id = "extract_{{ i }}"
+                                                  href="" onclick="doSomething({{ i }});return false;">点击获取</a></li>-->
+                    </ul>
+                </div>
+            </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row justify-content-around">
+        <ul id="pageLimit"></ul>
+    </div>
+    <script type="text/javascript">
+    function doSomething(i)
+    {
+        document.getElementById("li10_"+i).innerText="正在提取信息，请稍后";
+        $.post('/extract',
+            {url:document.getElementById("a_"+i).getAttribute("href")},
+            function (data,status) {
+                if(status == "success")
+                document.getElementById("li10_"+i).innerText=data;
+            });
+    }
+    $(function() {
+        var length = {{ length }};
+        var pageCount = Math.ceil(length/10);
+        var numOfPage = 8;
+        if(pageCount < 8)
+        {
+            numOfPage = pageCount;
+        }
+        var result = JSON.parse({{ result|tojson }});
+        for(var i=0;i<10;i++)
+        {
+            if(i<length)
+            {
+                document.getElementById("h3_"+i).innerText = result[i].name;
+                document.getElementById("li1_"+i).innerText = "所在省市 : "+ result[i].loc;
+                if(result[i].grade == 0)
+                {
+                     document.getElementById("li2_"+i).innerText = "景点星级 : 暂无";
+                }
+                else{
+                    document.getElementById("li2_"+i).innerText = "景点星级 : "+ result[i].grade;
+                }
+                document.getElementById("li3_"+i).innerText = "景点位置 : "+ result[i].position;
+                document.getElementById("li4_"+i).innerText = "开放时间 : "+ result[i].time;
+                document.getElementById("li5_"+i).innerText = "门票价格 : "+ result[i].price;
+                document.getElementById("li6_"+i).innerText = "景点类型 : "+ result[i].type;
+                document.getElementById("li7_"+i).innerText = "景点简介 : "+ result[i].info;
+                document.getElementById("a_"+i).setAttribute("href",result[i].href);
+                document.getElementById("li9_"+i).innerText = "排序权重 : "+ result[i].weight;
+            }
+        }
+        $('#pageLimit').bootstrapPaginator({
+            containerClass:"pagination",
+            currentPage: 1,
+            totalPages: pageCount,
+            size: "normal",
+            bootstrapMajorVersion: 3,
+            alignment: "center",
+            numberOfPages: numOfPage,
+            itemTexts: function (type, page, current) {
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }//默认显示的是第一页。
+            },
+            onPageClicked: function (event, originalEvent, type, page){//给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字。
+
+                var offset = (page-1)*10;
+                for(var i=0;i<10;i++) {
+                    document.getElementById("panel_"+i).style.visibility="visible";
+                }
+                for(var i=0;i<10;i++) {
+                     if(i<length-offset)
+                     {
+                        document.getElementById("h3_"+i).innerText = result[i+offset].name;
+                        document.getElementById("li1_"+i).innerText = "所在省市 : "+ result[i+offset].loc;
+                        if(result[i+offset].grade == 0)
+                        {
+                            document.getElementById("li2_"+i).innerText = "景点星级 : 暂无";
+                        }
+                        else{
+                            document.getElementById("li2_"+i).innerText = "景点星级 : "+ result[i+offset].grade;
+                        }
+                        document.getElementById("li3_"+i).innerText = "景点位置 : "+ result[i+offset].position;
+                        document.getElementById("li4_"+i).innerText = "开放时间 : "+ result[i+offset].time;
+                        document.getElementById("li5_"+i).innerText = "门票价格 : "+ result[i+offset].price;
+                        document.getElementById("li6_"+i).innerText = "景点类型 : "+ result[i+offset].type;
+                        document.getElementById("li7_"+i).innerText = "景点简介 : "+ result[i+offset].info;
+                        document.getElementById("a_"+i).setAttribute("href",result[i+offset].href);
+                        document.getElementById("li9_"+i).innerText = "排序权重 : "+ result[i+offset].weight;
+                     }
+                     else {
+                         document.getElementById("panel_"+i).style.visibility="hidden";
+                     }
+                }
+            }
+        })
+    });
+    </script>
+{% endblock %}

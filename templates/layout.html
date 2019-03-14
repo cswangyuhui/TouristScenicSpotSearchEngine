@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/qunit-1.11.0.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap-responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrapV3.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/site.css') }}"/>
+</head>
+<script src="{{ url_for('static',filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static',filename='js/bootstrap.bundle.js') }}"></script>
+<script src="{{ url_for('static',filename='js/bootstrapV3.js') }}"></script>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">旅游信息搜索引擎</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+    </div>
+
+</nav>
+
+<main class="container" role="main">
+    {% block body %}{% endblock %}
+</main>
+</body>
+</html>

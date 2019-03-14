@@ -1,0 +1,200 @@
+{% extends 'layout.html' %}
+{% block title %}主页{% endblock %}
+{% block body %}
+<script src="{{ url_for('static',filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/china.js') }}"></script>
+        <div class="row justify-content-around jumbotron">
+            <form id="form" action="{{ url_for('show') }}" method="post" class="col-8 form-inline"
+                role="form">
+                <input type="text" class="form-control col-10" name="my_query" id="my_query"
+                   placeholder="请输入查询语句">
+                <button type="submit" class="btn btn-success" form="form">提交</button>
+            </form>
+        </div>
+<div id="container" style="height: 700px;width:1000px;background:white;"></div>
+
+<script type="text/javascript">
+    // 全国省份列表
+    var dataMap = [{ name: '北京' }, { name: '天津' }, { name: '上海' }, { name: '重庆' }, { name: '河北' }, { name: '河南' }, { name: '云南' }, { name: '辽宁' }, { name: '黑龙江' }, { name: '湖南' }, { name: '安徽' }, { name: '山东' },
+    { name: '新疆' }, { name: '江苏' }, { name: '浙江' }, { name: '江西' }, { name: '湖北' }, { name: '广西' }, { name: '甘肃' }, { name: '山西' }, { name: '内蒙古' }, { name: '陕西' }, { name: '吉林' }, { name: '福建' }, { name: '贵州' },
+    { name: '广东' }, { name: '青海' }, { name: '西藏' }, { name: '四川' }, { name: '宁夏' }, { name: '海南' }, { name: '台湾' }, { name: '香港' }, { name: '澳门' }];
+    // 需要在页面上直接标记出来的城市
+    //var specialMap = ['浙江', '云南', '陕西'];
+    // 对dataMap进行处理，使其可以直接在页面上展示
+    /*for (var i = 0; i < specialMap.length; i++) {
+        for (var j = 0; j < dataMap.length; j++) {
+            if (specialMap[i] == dataMap[j].name) {
+                dataMap[j].selected = true;
+                break;
+            }
+
+        }
+    }*/
+    // 绘制图表，准备数据
+    var option = {
+        tooltip: {
+            formatter: function (params) {
+                var count = '暂无';
+                switch (params.name){
+                    case '北京':
+                        count = 1407;
+                        break;
+                    case '天津':
+                        count = 335;
+                        break;
+                    case '上海':
+                        count = 691;
+                        break;
+                    case '重庆':
+                        count = 366;
+                        break;
+                    case '河北':
+                        count = 1020;
+                        break;
+                    case '河南':
+                        count = 884;
+                        break;
+                    case '云南':
+                        count = 1040;
+                        break;
+                    case '辽宁':
+                        count = 888;
+                        break;
+                    case '黑龙江':
+                        count = 636;
+                        break;
+                    case '湖南':
+                        count = 846;
+                        break;
+                    case '安徽':
+                        count = 907;
+                        break;
+                    case '山东':
+                        count = 985;
+                        break;
+                    case '新疆':
+                        count = 566;
+                        break;
+                    case '江苏':
+                        count = 1970;
+                        break;
+                    case '浙江':
+                        count = 2383;
+                        break;
+                    case '江西':
+                        count = 660;
+                        break;
+                    case '湖北':
+                        count = 898;
+                        break;
+                    case '广西':
+                        count = 988;
+                        break;
+                    case '甘肃':
+                        count = 533;
+                        break;
+                    case '山西':
+                        count = 889;
+                        break;
+                    case '内蒙古':
+                        count = 474;
+                        break;
+                    case '陕西':
+                        count = 821;
+                        break;
+                    case '福建':
+                        count = 1732;
+                        break;
+                    case '吉林':
+                        count = 345;
+                        break;
+                    case '贵州':
+                        count = 538;
+                        break;
+                    case '广东':
+                        count = 929;
+                        break;
+                    case '青海':
+                        count = 238;
+                        break;
+                    case '西藏':
+                        count = 318;
+                        break;
+                    case '四川':
+                        count = 1121;
+                        break;
+                    case '宁夏':
+                        count = 228;
+                        break;
+                    case '海南':
+                        count = 270;
+                        break;
+                    case '台湾':
+                        count = 242;
+                        break;
+                    case '香港':
+                        count = 29;
+                        break;
+                    case '澳门':
+                        count = 25;
+                        break;
+                    default:
+                        count = '暂无';
+                        break;
+                }
+                var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">' + '景点数量：'+ count + '</p>';
+                return info;
+            },
+            backgroundColor: "#ff7f50",//提示标签背景颜色
+            textStyle: { color: "#fff" } //提示标签字体颜色
+        },
+        series: [
+            {
+                name: '中国',
+                type: 'map',
+                mapType: 'china',
+                selectedMode: 'single',
+                label: {
+                    normal: {
+                        show: true,//显示省份标签
+                        // textStyle:{color:"#c71585"}//省份标签字体颜色
+                    },
+                    emphasis: {
+                        show: true,//对应的鼠标悬浮效果
+                        // textStyle:{color:"#800080"}
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        borderWidth: .5,//区域边框宽度
+                        // borderColor: '#009fe8',//区域边框颜色
+                        // areaColor:"#ffefd5",//区域颜色
+                    },
+                    emphasis: {
+                        borderWidth: .5,
+                        borderColor: '#4b0082',
+                        areaColor: "#ffdead",
+                    }
+                },
+                data: dataMap
+            }
+        ]
+    };
+    //初始化echarts实例
+    var myChart = echarts.init(document.getElementById('container'));
+    //使用制定的配置项和数据显示图表
+    myChart.setOption(option);
+    myChart.on('click',function (param) {
+       document.getElementById('my_query').value = param.name;
+    });
+</script>
+
+<div style="text-align:center;clear:both;">
+<script src="/gg_bd_ad_720x90.js" type="text/javascript"></script>
+<script src="/follow.js" type="text/javascript"></script>
+</div>
+<div class="container footer">
+    <hr>
+</div>
+
+{% endblock %}
